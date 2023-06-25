@@ -47,7 +47,7 @@ bot_wall = Wall(0 , height, width, wall_height, RED, height)
 
 #ojbs list
 objs_list = [left_paddle, right_paddle, top_wall, bot_wall]
-
+menu_pervious_selection = 0
 
 def main():
     # game event
@@ -58,50 +58,105 @@ def main():
     respawn_time = 3000
     game_started = False
     score_board = [0,0]
+    
     while running:
         cons_time = clock.tick(FPS_LIMIT)
-        # Event handling to end game sessoin
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
-                if not game_started and event.key == pygame.K_SPACE:
-                    game_started = True
 
-        
-        # Fill screen with color
-        screen.fill(BACKGROUND_COLOR)
-        if not game_started:
-            press_space_start(screen)
+        # Draw main menu
+        main_menu()
 
-        elif not Waiting:
-            draw_score(screen, score_board)
-            draw_and_update_pos(ball, left_paddle, right_paddle, top_wall, bot_wall, screen, cons_time)        
-            check_ball_collides(ball, objs_list)
-            if check_out_bound(ball, score_board):
-                ball_out_of_bounds_time = pygame.time.get_ticks()
-                ball.dx = 0
-                ball.dy = 0
-                Waiting = True
-        else:
-            draw_score(screen, score_board)
-            draw_and_update_pos(ball, left_paddle, right_paddle, top_wall, bot_wall, screen, cons_time)
-            current_time = pygame.time.get_ticks()  # Get the current time
-            elapsed_time = current_time - ball_out_of_bounds_time  # Calculate the elapsed time
+        # # Fill screen with color
+        # screen.fill(BACKGROUND_COLOR)
+        # if not game_started:
+        #     press_space_start(screen)
+
+        # elif not Waiting:
+        #     draw_score(screen, score_board)
+        #     draw_and_update_pos(ball, left_paddle, right_paddle, top_wall, bot_wall, screen, cons_time)        
+        #     check_ball_collides(ball, objs_list)
+        #     if check_out_bound(ball, score_board):
+        #         ball_out_of_bounds_time = pygame.time.get_ticks()
+        #         ball.dx = 0
+        #         ball.dy = 0
+        #         Waiting = True
+        # else:
+        #     draw_score(screen, score_board)
+        #     draw_and_update_pos(ball, left_paddle, right_paddle, top_wall, bot_wall, screen, cons_time)
+        #     current_time = pygame.time.get_ticks()  # Get the current time
+        #     elapsed_time = current_time - ball_out_of_bounds_time  # Calculate the elapsed time
             
-            count_down_text(screen, respawn_time - elapsed_time)
-            if elapsed_time >= respawn_time:
-                ball.dx = random.choice([-ball_speed, ball_speed])
-                ball.dy = 0
-                ball.x = init_ball_x
-                ball.y = init_ball_y
-                Waiting = False
+        #     count_down_text(screen, respawn_time - elapsed_time)
+        #     if elapsed_time >= respawn_time:
+        #         ball.dx = random.choice([-ball_speed, ball_speed])
+        #         ball.dy = 0
+        #         ball.x = init_ball_x
+        #         ball.y = init_ball_y
+        #         Waiting = False
         
-        # Update screen
-        pygame.display.flip()
+        # # Update screen
+        # pygame.display.flip()
 
     pygame.quit()
 
+# Two component selection handle and render
+def main_menu():
+
+    menu_options = ["Play Local", "Play Online", "Exit"]
+    handle_menu_selection(menu_options)
+    main_menu_render(menu_options)
+    
+
+def handle_menu_selection(menu_options):
+    global menu_pervious_selection 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                # Handle menu option selection
+                menu_pervious_selection = (menu_pervious_selection - 1) % len(menu_options)
+            elif event.key == pygame.K_DOWN:
+                # Handle menu option selection
+                menu_pervious_selection = (menu_pervious_selection + 1) % len(menu_options)
+            elif event.key == pygame.K_RETURN:
+                # Handle menu option execution
+                if menu_pervious_selection == 0:
+                    play_local_game()
+                elif menu_pervious_selection == 1:
+                    play_online_game()
+                elif menu_pervious_selection == 2:
+                    pygame.quit()
+
+
+
+def main_menu_render(menu_options):
+    screen.fill(BLACK)  # Clear the screen
+    
+    # Title 
+    title_font = pygame.font.Font(None, 100)
+    title_text = title_font.render("PyPong", True, (135, 206, 250))
+    title_text_rect = title_text.get_rect(center=(width // 2, height// 3 - 50))
+    screen.blit(title_text, title_text_rect)
+
+    # Render menu options
+    menu_font = pygame.font.Font(None, 36)
+    for i, option in enumerate(menu_options):
+        text = menu_font.render(option, True, WHITE)
+        text_rect = text.get_rect(center=(width // 2, height // 2 + i * 50))
+        hint_y = text_rect.bottom
+        screen.blit(text, text_rect)
+        # Render an arrow based on the selected options (global var)
+        if i == menu_pervious_selection:
+                arrow_text = menu_font.render("->", True, WHITE)
+                arrow_rect = arrow_text.get_rect(midright=(text_rect.left - 10, text_rect.centery))
+                screen.blit(arrow_text, arrow_rect)
+
+    # Print Hint of use arrow key to select options
+    menu_font = pygame.font.Font(None, 25)
+    hint_text = menu_font.render("Hint: Press arrow keys to select and ENTER to Choose", True, WHITE)
+    hint_text_rect = hint_text.get_rect(center=(width // 2, hint_y + 50))
+    screen.blit(hint_text, hint_text_rect)
+    pygame.display.flip()  # Update the screen
 
 
 
@@ -141,7 +196,7 @@ def count_down_text(screen, countdown_time_remaining):
 
 def press_space_start(screen):
     start_font = pygame.font.Font(None, 40)
-    start_text = start_font.render("Press SPACE to start the game", True, (255, 255, 255))
+    start_text = start_font.render("Press SPACE to start the game", True, WHITE)
     start_text_rect = start_text.get_rect(center=(width // 2, height // 2))
     screen.blit(start_text, start_text_rect)
 
@@ -150,13 +205,24 @@ def draw_score(screen, score_board):
     score_positions = [(width // 2 + 50, 20), (width // 2 - 50, 20)]
 
     for i, score in enumerate(score_board):
-        score_text = score_font.render(str(score), True, (255, 255, 255))
+        score_text = score_font.render(str(score), True, WHITE)
         score_text_rect = score_text.get_rect(center=score_positions[i])
         screen.blit(score_text, score_text_rect)
 
 
 
+    
+    
+    
+    
 
+
+def play_local_game():
+    print("Not yet develope")
+
+
+def play_online_game():
+    print("Not yet develope")
 
 if __name__ == "__main__":
     main()
