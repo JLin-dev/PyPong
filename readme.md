@@ -1,4 +1,6 @@
-# Notes For My Self
+# PyPong  
+
+Rarely use Python, first time using pygame. Nice warm up.
 
 ## Env setting
 
