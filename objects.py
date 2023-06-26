@@ -2,7 +2,7 @@ import pygame
 
 class Ball:
     # constructor
-    def __init__(self, x, y, radius, dx, dy, ball_color):
+    def __init__(self, x, y, dx, dy = 0, radius = 10, ball_color = (255, 255, 255)):
         self.x = x
         self.y = y
         self.raidus = radius
@@ -47,7 +47,6 @@ class Paddle:
         self.velocity_y = 0
         self.prev_paddle_y = self.y
         self.clock = pygame.time.Clock()
-
 
     # Draw paddle (srface, (color), (x, y, width, height))
     def draw(self, surface):
@@ -98,14 +97,6 @@ class Paddle:
         self.velocity_y = delta_y / cons_time
         self.prev_paddle_y = self.y
         
-
-
-
-
-
-        
-
-
 class Wall:
     def __init__(self, x, y, width, height, color, disp_height):
         self.x = x
@@ -136,5 +127,3 @@ class Wall:
             elif obj_rect.right >= self_rect.left:
                 # only change z direction
                 obj.dx *= -1
-
-

@@ -6,13 +6,13 @@ from objects import Wall
 # maybe use use individual import so i get to know the origin of a object
 # from pygame.locals import *
 
-
 # GLOBAL VAR 
 FPS_LIMIT = 60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BACKGROUND_COLOR = BLACK
+PADDLE_COLOR = RED
 MENU_SELECTION = 0
 LOCAL_SELECTION = 1
 PVP = 2
@@ -21,7 +21,6 @@ ONLINE = 4
 menu_pervious_selection = 0
 sub_menu_pervious_selection = 0
 state_selection = MENU_SELECTION
-
 
 # pygame set up
 pygame.init()
@@ -32,79 +31,34 @@ pygame.display.set_caption("Pong")
 # pygame.display.toggle_fullscreen()
 
 # All this secion below should be able to put into main
-# object attrb and init
+# Paddle
 paddle_width = 15
 paddle_height = 60
 paddle_speed = 10
 init_paddle_y = height // 2
-PADDLE_COLOR = RED
+left_paddle = Paddle(0, init_paddle_y - paddle_height/2 , paddle_width, paddle_height, paddle_speed, PADDLE_COLOR, height)
+right_paddle = Paddle(width - paddle_width, init_paddle_y - paddle_height/2, paddle_width, paddle_height, paddle_speed, PADDLE_COLOR, height)
 
+# Ball
 ball_speed = 7
 ball_radius = 10
 init_ball_x = width //  2  # Shifted to the left by half the ball radius
 init_ball_y = height // 2  # Shifted upward by half the ball radius
-init_ball_dx = random.choice([-ball_speed, ball_speed])  # Randomly select -1 or 1 for horizontal direction
-init_ball_dy = 0  # Randomly select -1 or 1 for vertical direction
-init_ball_dy = 0
-BALL_COLOR = (255, 255, 255)
+ball = Ball(init_ball_x, init_ball_y, dx = random.choice([-ball_speed, ball_speed]))
 
 # Wall
 wall_height = 1
-
-
-# object create
-ball = Ball(init_ball_x, init_ball_y, ball_radius, init_ball_dx, init_ball_dy, BALL_COLOR)
-left_paddle = Paddle(0, init_paddle_y - paddle_height/2 , paddle_width, paddle_height, paddle_speed, PADDLE_COLOR, height)
-right_paddle = Paddle(width - paddle_width, init_paddle_y - paddle_height/2, paddle_width, paddle_height, paddle_speed, PADDLE_COLOR, height)
 top_wall = Wall(0 , 0 - wall_height, width, wall_height, RED, height)
 bot_wall = Wall(0 , height, width, wall_height, RED, height)
-
-#ojbs list
-objs_list = [left_paddle, right_paddle, top_wall, bot_wall]
-
 
 def main():
     # game event
     running = True
-    clock = pygame.time.Clock()
-
-    
+    clock = pygame.time.Clock()    
     while running:
         clock.tick(FPS_LIMIT)
-
         # Draw main menu
         main_menu()
-
-        # # Fill screen with color
-        # screen.fill(BACKGROUND_COLOR)
-        # if not game_started:
-        #     press_space_start(screen)
-
-        # elif not Waiting:
-        #     draw_score(screen, score_board)
-        #     draw_and_update_pos(ball, left_paddle, right_paddle, top_wall, bot_wall, screen, cons_time)        
-        #     check_ball_collides(ball, objs_list)
-        #     if check_out_bound(ball, score_board):
-        #         ball_out_of_bounds_time = pygame.time.get_ticks()
-        #         ball.dx = 0
-        #         ball.dy = 0
-        #         Waiting = True
-        # else:
-        #     draw_score(screen, score_board)
-        #     draw_and_update_pos(ball, left_paddle, right_paddle, top_wall, bot_wall, screen, cons_time)
-        #     current_time = pygame.time.get_ticks()  # Get the current time
-        #     elapsed_time = current_time - ball_out_of_bounds_time  # Calculate the elapsed time
-            
-        #     count_down_text(screen, respawn_time - elapsed_time)
-        #     if elapsed_time >= respawn_time:
-        #         ball.dx = random.choice([-ball_speed, ball_speed])
-        #         ball.dy = 0
-        #         ball.x = init_ball_x
-        #         ball.y = init_ball_y
-        #         Waiting = False
-        
-        # # Update screen
-        # pygame.display.flip()
 
 # Two component selection handle and render
 def main_menu():
@@ -120,6 +74,7 @@ def main_menu():
         render_local_selection(menu_options)
     elif state_selection == PVP:
         # ingame, game_started, waiting, score_board, ball_out_of_bounds_time, respaen_time
+        objs_list = [left_paddle, right_paddle, top_wall, bot_wall]
         game_state = [True, False, True, [0,0], 0, 3000]
         clock2 = pygame.time.Clock()
         while game_state[0]:
@@ -132,7 +87,7 @@ def main_menu():
                     if event.key == pygame.K_SPACE:
                         game_state[1] = True
                         game_state[2] = False
-            player_vs_player(game_state, cons_time)
+            player_vs_player(game_state, cons_time, objs_list)
 
     elif state_selection == PVE:
         while True:
@@ -144,8 +99,7 @@ def main_menu():
         print("main menu func something wrong")
     pygame.display.flip()
     
-
-def player_vs_player(game_state, cons_time):
+def player_vs_player(game_state, cons_time, objs_list):
     screen.fill(BACKGROUND_COLOR)
     # game state = [(0)ingame, (1)game_started, (2)waiting, (3)score_board, (4)ball_out_of_bounds_time, (5)respawn_time]
     # Handle
@@ -276,10 +230,6 @@ def render_local_selection(menu_options):
     screen.blit(hint_text, hint_text_rect)
     # pygame.display.flip()  # Update the screen
 
-
-
-
-
 def draw_and_update_pos(ball, l_paddle, r_paddle, t_wall, b_wall, surface, cons_time):
     ball.draw(surface)
     l_paddle.draw(surface)
@@ -320,7 +270,6 @@ def press_space_start(screen):
     start_text_rect = start_text.get_rect(center=(width // 2, height // 2))
     screen.blit(start_text, start_text_rect)
 
-
 def draw_score(screen, score_board):
     score_font = pygame.font.Font(None, 36)
     score_positions = [(width // 2 + 50, 20), (width // 2 - 50, 20)]
@@ -330,22 +279,11 @@ def draw_score(screen, score_board):
         score_text_rect = score_text.get_rect(center=score_positions[i])
         screen.blit(score_text, score_text_rect)
 
-
-
-    
-    
 def player_vs_bot():
     print("")
 
 def play_online_game():
     print("Not yet develope")
-
-
-
-    
-    
-
-
 
 if __name__ == "__main__":
     main()
