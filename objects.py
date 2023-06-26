@@ -87,11 +87,8 @@ class Paddle:
              #   obj.x = self.x + self.width + obj.radius + 1  # Move the ball outside the paddle to the right
             obj.dx *= -1 
             new_dy = obj.dy + self.velocity_y * collide_direction_factor
-            print(new_dy)
             # Update dy based on the direction of ball movement
             if obj.dy <= 0:  # Ball moving upwards
-                print(new_dy)
-                print(max(new_dy, -max_speed))
                 obj.dy = max(new_dy, -max_speed)  # Limit the maximum upward velocity
             else:  # Ball moving downwards
                 obj.dy = min(new_dy, max_speed)  # Limit the maximum downwards velocity
