@@ -1,10 +1,9 @@
 # __PyPong__
 
-Rarely use Python, first time using pygame. Nice warm up.
+Hi everyone, this is my first time using pyton for a looooonng time. Last time I learned python was in a data science course which is years ago. And this is my first indivual big projct with python. I will be using pygame to develope pong game this is also why is called PyPong. I am aimming to learn more about python in this project and in addation muti-player networking, and perhaps AI traning as well. In this open source repo you will see my ~~spaghetti~~ some what organize code.
 
 ## __Env setting__
 
-Most of things is just for my info.  
 Check if pygame lib is instal: `pip show pygame`  
 Using pygame lib: ```pip install pygame```  
 
@@ -37,3 +36,8 @@ Scalability and Performance:
 - Not going to handle scalabilty since this is local network. Only two player connect max.
 - There will be optim when the depoly of local connection is successfully.  
 
+---
+
+## __server.py__
+
+Test code area: really interesting way to stop a server by using keyboard package. `keyboard.onpress()` can capture python events which means this is running on a seperate thread and does not block the main program. Inside the parameter we can put in function (without calling the function but the function when we are going to invoke when the events happen). Which we dont include () when we call the handling function. In the provided code demo when we are going to put in a function that contains two variable in the params we can call it by creating an anonymous function which accpet both event and server_socket. By doing this we can pass in two var without invoking the function in the first place. The event right after lambda is automatically pass in by the key press event.

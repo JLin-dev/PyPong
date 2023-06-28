@@ -1,8 +1,9 @@
 import random
 import pygame
-from objects import Ball
-from objects import Paddle
-from objects import Wall
+from objects import *
+from local_network import *
+
+
 # maybe use use individual import so i get to know the origin of a object
 # from pygame.locals import *
 
@@ -93,8 +94,9 @@ def main_menu():
         while True:
             player_vs_bot()
     elif state_selection == ONLINE:
-        while True:
-            play_online_game()
+        clinet.play_online_game()
+        state_selection = MENU_SELECTION
+
     else:
         print("main menu func something wrong")
     pygame.display.flip()
@@ -148,7 +150,7 @@ def handle_menu_selection(menu_options):
                 if menu_pervious_selection == 0:
                     state_selection = 1
                 elif menu_pervious_selection == 1:
-                    play_online_game()
+                    state_selection = ONLINE
                 elif menu_pervious_selection == 2:
                     pygame.quit()
                     exit()
@@ -282,8 +284,7 @@ def draw_score(screen, score_board):
 def player_vs_bot():
     print("")
 
-def play_online_game():
-    print("Not yet develope")
+
 
 if __name__ == "__main__":
     main()
