@@ -1,43 +1,56 @@
 import socket
 import keyboard # pip install keyboard
+from _thread import *
+import sys
 
 HOST = '192.168.1.15'  # The server's hostname or IP address 
 PORT = 12345        # The port used for the server
 buffer_size = 1024
+# Create a socket object
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-
-def main():
-    # Create a socket object
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+try:
     # Bind the socket to a specific address and port
     server_socket.bind((HOST, PORT))
+except socket.error as e:
+    str(e)
 
-    # Listen for incoming connections (this is use for TDP)
+
+
+
+# Listen for incoming connections (this is use for TDP)
     # server_socket.listen()
     # Listen for incoming connections (UTP)
-    print("Server listening on {}:{}".format(HOST, PORT))
+print("Server listening on {}:{}".format(HOST, PORT))
 
-    # Register the key press event handler
-    keyboard.on_press(lambda event: handle_key_press(event, server_socket))
-
+# have mutiple clinet that may connect to 
+def threaded_clinet(conn):
+    reply = ""
     while True:
-        # Accept incoming connections
-        data, client_address = server_socket.recvfrom(buffer_size)
-        print("Connected to client:", client_address)
-        print("Data:", data.decode())
+        try:
+            data = conn.recv(2048)
+            reply = data.decode("utf-8")
+
+            if not data:
+                print("Disconnected")
+                break
+            else:
+                print("Recevied: ", reply)
+                print("Sending: ", reply)
+
+            conn.sendall(str.encode(reply))
+        except:
+            break
 
 
-# Function to handle key press events
-def handle_key_press(event, server_socket):
+
+
+# continuously looking for new clinet
+while True:
+    conn , client_address = server_socket.recvfrom(buffer_size)
+    start_new_thread(threaded_clinet, (conn, ))
     
-    if event.name == 'pause':  # Press 'pause' to quit the server
-        # Clean up and exit the server
-        server_socket.close()
-        print("Server closed.")
-        exit()
 
 
-if __name__ == '__main__':
-    main()
+
 
