@@ -1,6 +1,5 @@
 import pygame
 import socket
-import 
 from pygame.locals import *
 
 FPS_LIMIT = 60

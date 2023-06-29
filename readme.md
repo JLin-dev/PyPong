@@ -1,6 +1,8 @@
 # __PyPong__
 
-Hi everyone, this is my first time using pyton for a looooonng time. Last time I learned python was in a data science course which is years ago. And this is my first indivual big projct with python. I will be using pygame to develope pong game this is also why is called PyPong. I am aimming to learn more about python in this project and in addation muti-player networking, and perhaps AI traning as well. In this open source repo you will see my ~~spaghetti~~ some what organize code.
+Hi everyone, this is my first time using pyton for a looooonng time. Last time I learned python was in a data science course which is years ago. And this is my first indivual big projct with python. I will be using pygame to develope pong game this is also why is called PyPong. I am aimming to learn more about python in this project and in addation muti-player networking, and perhaps AI traning as well. In this open source repo you will see my ~~spaghetti~~ some what organize code. 
+
+Quick update: this side project is temp suspended due busy schdule.
 
 ## __Env setting__
 
